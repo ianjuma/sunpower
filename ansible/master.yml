@@ -1,0 +1,10 @@
+---
+- hosts: all
+  roles:
+    - buildtools
+    - redis
+    - iptables
+
+- hosts: webserver
+  roles:
+    - nginx

@@ -1,0 +1,71 @@
+---
+- hosts: sunpower
+
+  vars_files:
+    - vars/main.yml
+
+  remote_user: root
+  tasks:
+  - group: name=sunpower state=present
+
+  - name: Create User
+    user: name=sunpower shell=/bin/bash uid=1040 group=sunpower
+
+  - name: Create Dir
+    file: path=/usr/share/nginx/logs state=directory
+
+  - name: add hooks
+    file: path=/var/www state=directory
+    file: path=/var/www/sunpower.git state=directory
+
+  - name: Create App Dir
+    file: path=~/sunpower state=directory
+
+  - name: Write ssh public key
+    template: src=templates/id_rsa.pub.j2 dest=~/.ssh/id_rsa.pub
+
+  - name: Write env file
+    template: src=templates/env.j2 dest=~/sunpower/.env
+
+  - name: Write ssh private key
+    template: src=templates/id_rsa.j2 dest=~/.ssh/id_rsa
+
+  - name: Git PPA
+    apt_repository: repo='ppa:git-core/ppa' state=present
+    register: ppastable
+
+  - name: Install Git
+    apt: pkg=git-core state=latest update_cache=yes
+    when: ppastable
+    register: git-Installed
+
+  - name: Install psycopg2
+    apt: pkg=python-psycopg2 state=latest
+
+  - name: add hooks
+    command: /usr/bin/git init --bare /var/www/sunpower.git
+
+  - name: setup post-receive hook
+    template: src=templates/post-receive dest=/var/www/sunpower.git/hooks
+
+  - name: chmod post-receive
+    shell: /bin/chmod +x /var/www/sunpower.git/hooks/post-receive
+
+  - name: Setup Init Service
+    template: src=templates/sunpower-service.j2 dest=/etc/init.d/sunpower-service
+
+  - name: chmod Init service
+    shell: /bin/chmod +x /etc/init.d/sunpower-service
+
+#  - name: Ensure github is a known host
+#    action: sshknownhosts host=github.com state=present
+
+#  - name: Pull Morpheus
+#    git:
+#      repo: git@github.com:ianjuma/morpheus.git
+#      dest: /home/root
+#      update: no
+#      accept_hostkey: true
+#    register: morph-Installed
+
+

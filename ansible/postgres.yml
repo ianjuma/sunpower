@@ -1,0 +1,43 @@
+---
+- hosts: sunpower
+
+  vars_files:
+    - vars/main.yml
+
+  remote_user: root
+
+  tasks:
+   - name: Add postgres PPA
+     apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main' state=present
+     register: ppastable
+
+   - name: Install Postgres
+     apt: pkg=postgresql-{{ version }} state=installed update_cache=true force=yes
+     when: ppastable|success
+     register: postgresql
+     notify:
+      - Start postgresql
+
+   - name: Ensure postgresql is at the latest version
+     apt: pkg=postgresql-{{ version }} state=latest update_cache=true force=yes
+
+   - name: Write postgresql conf
+     template: src=templates/pg_hba.j2 dest=/etc/postgresql/{{ version }}/main/pg_hba.conf
+     notify:
+      - Restart postgresql
+
+   - name: Ensure postgresql is running
+     service: name=postgresql state=started
+
+   - name: Add new Postgres User
+     postgresql_user: name=autobay password="j633.125**//" role_attr_flags=CREATEDB,NOSUPERUSER
+
+   - name : Add autobay Database
+     postgresql_db: name=autobay
+
+  handlers:
+   - name: Restart postgresql
+     service: name=postgresql state=restarted
+
+   - name: Start postgresql
+     service: name=postgresql state=started

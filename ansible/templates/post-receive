@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git --work-tree=$HOME/autobay --git-dir=/var/www/autobay.git checkout -f

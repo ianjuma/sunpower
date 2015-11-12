@@ -1,0 +1,32 @@
+---
+- hosts: sunpower
+
+  vars_files:
+    - vars/main.yml
+
+  remote_user: root
+
+  tasks:
+   - name: Install fail2ban
+     apt: pkg=fail2ban state=installed update_cache=true
+     notify:
+      - Start fail2ban
+
+   - name: Ensure fail2ban is at the latest version
+     apt: pkg=fail2ban state=latest update_cache=true
+
+   - name: Write ban conf
+     template: src=templates/fail2ban.j2 dest=/etc/fail2ban/jail.local
+     notify:
+      - Restart fail2ban
+
+   - name: Ensure fail2ban is running
+     service: name=fail2ban state=started
+
+
+  handlers:
+   - name: Restart fail2ban
+     service: name=fail2ban state=restarted
+
+   - name: Start fail2ban
+     service: name=fail2ban state=started

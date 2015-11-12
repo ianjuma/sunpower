@@ -1,0 +1,12 @@
+---
+- hosts: sunpower
+
+  vars_files:
+    - vars/main.yml
+
+  remote_user: root
+  tasks:
+  - name: Install build-essential
+    apt: pkg=build-essential state=latest update_cache=yes
+    register: buildessential_installed
+

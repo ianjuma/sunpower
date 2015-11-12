@@ -1,0 +1,17 @@
+---
+# nginx conf
+max_clients: 200
+pid_log: /var/log/nginx/nginx.pid
+error_log: /var/log/nginx/error.log
+processes: 4
+server_name: www.morpheus.com
+access_log: /var/log/nginx/access.log
+ssl_certificate: /etc/nginx/ssl/ssl-bundle.crt
+ssl_certificate_key: /etc/nginx/ssl/server.key
+
+# redis conf
+
+
+
+# postgres conf
+version: 9.4

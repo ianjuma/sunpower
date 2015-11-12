@@ -1,0 +1,51 @@
+[DEFAULT]
+
+# "ignoreip" can be an IP address, a CIDR mask or a DNS host
+ignoreip = 127.0.0.1/8
+bantime  = 600
+maxretry = 3
+
+backend = auto
+destemail = root@localhost
+
+
+[ssh]
+
+enabled  = true
+port     = ssh
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 6
+
+
+[named-refused-tcp]
+
+enabled  = false
+port     = domain,953
+protocol = tcp
+filter   = named-refused
+logpath  = /var/log/named/security.log
+
+
+[dovecot]
+
+enabled = false
+port    = smtp,ssmtp,imap2,imap3,imaps,pop3,pop3s
+filter  = dovecot
+logpath = /var/log/mail.log
+
+
+[ssh-ddos]
+
+enabled  = false
+port     = ssh
+filter   = sshd-ddos
+logpath  = /var/log/auth.log
+maxretry = 6
+
+
+# Default protocol
+protocol = tcp
+
+# Specify chain where jumps would need to be added in iptables-* actions
+chain = INPUT

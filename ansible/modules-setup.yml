@@ -1,0 +1,10 @@
+---
+- hosts: sunpower
+
+  vars_files:
+    - vars/main.yml
+
+  remote_user: root
+  tasks:
+  - name: fetch Modules
+    command: chdir=~/sunpower pip install -r requirements.txt

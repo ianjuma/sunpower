@@ -1,0 +1,51 @@
+*filter
+
+# Flushing all rules
+-F
+-X
+
+# Setting default filter policy
+-A INPUT -j ACCEPT
+-A OUTPUT -j ACCEPT
+-A FORWARD -j ACCEPT
+
+#drop null packets
+-A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+
+# drop SYN flood
+-A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+
+# drop XMAS packets
+-A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+
+# by default drop and input and output except
+# 80, 443 and 22, 9000 - ssh
+-A INPUT -m tcp -p tcp -m state --state NEW,RELATED,ESTABLISHED --dport 80 -j ACCEPT
+-A INPUT -m tcp -p tcp -m state --state NEW,RELATED,ESTABLISHED --dport 443 -j ACCEPT
+-A INPUT -m tcp -p tcp -m state --state NEW,RELATED,ESTABLISHED --dport 22 -j ACCEPT
+
+# add rethink exception
+# -A INPUT -m tcp -p tcp -m state --state NEW,ESTABLISHED --dport 29019 -j ACCEPT
+
+
+# set limits for 100 connecions per IP
+-A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --set
+-A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --update --seconds 60  --hitcount 15 -j DROP
+
+# drop pings
+-A INPUT -p icmp --icmp-type echo-request -j DROP
+-A OUTPUT -p icmp --icmp-type echo-reply -j DROP
+
+# allow loopback access for reverse proxing
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+# disable ping - kernel
+# sysctl -w net.ipv4.icmp_echo_ignore_all=0
+
+# reduce dDos attacks
+-A INPUT -p tcp --dport 80 -m limit --limit 25/minute --limit-burst 100 -j ACCEPT
+
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT
