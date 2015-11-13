@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '../.env')
 load_dotenv(dotenv_path)
 
+CELERY_BROKER_URL = "amqp://synod:synod@localhost:5672//"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
 SQLALCHEMY_DATABASE_URI = "postgresql://synod:@localhost:5432/sunpower"
 BUNDLE_ERRORS = True
 
