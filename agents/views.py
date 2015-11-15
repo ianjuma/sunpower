@@ -43,7 +43,7 @@ class AgentList(Resource):
     @staticmethod
     def post():
         data = parser.parse_args()
-        agent = Agent(email=data.email, username=data.name, phone_number=data.phone_nubmer)
+        agent = Agent(email=data.email, username=data.username, phone_number=data.phone_nubmer)
         with agent:
             db.session.add(agent)
             db.commit()
