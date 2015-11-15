@@ -9,6 +9,15 @@ from sunpower.database import init_db
 
 
 @manager.command
+def migrate():
+    """
+    run migrations
+    :return:
+    """
+    pass
+
+
+@manager.command
 def run():
     """
     start sun-power rest API

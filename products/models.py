@@ -12,8 +12,9 @@ class Product(Base):
 
     type = Column(String(120), unique=False)
 
-    def __init__(self, name):
+    def __init__(self, name, category):
         self.name = name
+        self.category = category
 
     def __repr__(self):
         return '<Product %r>' % self.username
