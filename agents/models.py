@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Integer, String, Sequence
+# from sqlalchemy.schema import CreateSequence
 from sunpower.database import Base
+
+# Base.execute(CreateSequence(Sequence('agent_id_sequence')))
 
 
 class Agent(Base):

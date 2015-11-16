@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
-from flask import jsonify
-from sunpower import db
+from flask import jsonify, request
+from sunpower.database import db_session
 from agents.models import Agent
 parser = reqparse.RequestParser()
 
@@ -24,7 +24,8 @@ class AgentDetail(Resource):
             agent.phone_number = data.get('phone_number', None)
             agent.username = data.get('username', None)
 
-            db.commit()
+            db_session.add(agent)
+            db_session.commit()
 
         return jsonify(agent)
 
@@ -42,10 +43,14 @@ class AgentList(Resource):
 
     @staticmethod
     def post():
-        data = parser.parse_args()
-        agent = Agent(email=data.email, username=data.username, phone_number=data.phone_nubmer)
-        with agent:
-            db.session.add(agent)
-            db.commit()
+        data = request.get_json(force=True)
+        email = data.get('email', None)
+        username = data.get('username', None)
+        phone_number = data.get('phone_number', None)
+        agent = Agent(email=email, username=username, phone_number=phone_number)
 
-        return jsonify(agent)
+        db_session.add(agent)
+        db_session.commit()
+        json = {'username': username, 'phone_number': phone_number, 'email': email}
+
+        return jsonify(json)

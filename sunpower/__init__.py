@@ -5,6 +5,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_restful import Api
 
 from sunpower.views import Index
+from sunpower.database import db_session
 
 app = Flask('app')
 api = Api(app)
